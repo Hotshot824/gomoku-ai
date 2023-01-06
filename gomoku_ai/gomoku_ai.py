@@ -21,10 +21,10 @@ class gomokuAI(base.BaseBoard):
     def __set_evaluate_table(self):
         return {
             ('alive', 5) : 100000, ('death', 5) : 100000, ('close', 5) : 100000,
-            ('alive', 4) : 10000, ('death', 4) : 5000, ('close', 4) : 0,
-            ('alive', 3) : 1000, ('death', 3) : 500, ('close', 3) : 0,
-            ('alive', 2) : 100, ('death', 2) : 50, ('close', 2) : 0,
-            ('alive', 1) : 10, ('death', 1) : 5, ('close', 1) : 0,
+            ('alive', 4) : 10000, ('death', 4) : 1000, ('close', 4) : 0,
+            ('alive', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
+            ('alive', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
+            ('alive', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
         }
 
     def __piece_chess(self, board, position, player):
