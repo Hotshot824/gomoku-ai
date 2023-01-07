@@ -1,9 +1,9 @@
 import asyncio
 import json, time
-import gomoku_ai.gomoku_ai as gomokuai
+import GomokuAI.GomokuAI as GomokuAI
 
 
-class GomokuServer(asyncio.Protocol, gomokuai.gomokuAI):
+class GomokuServer(asyncio.Protocol, GomokuAI.GomokuAI):
     def connection_made(self, transport):
         self.__transport = transport
         self.__address = transport.get_extra_info('peername')

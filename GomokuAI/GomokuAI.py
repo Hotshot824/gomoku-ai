@@ -1,7 +1,7 @@
-import gomoku_ai.base as base
+import GomokuAI.Base as Base
 import copy
 
-class gomokuAI(base.BaseBoard):
+class GomokuAI(Base.BaseBoard):
     def __init__(self):
         super().__init__()
         self.minint = -2147483648

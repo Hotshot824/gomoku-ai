@@ -4,13 +4,24 @@ import numpy as np
 
 
 class BaseBoard():
-    def __init__(self):
+    def __init__(self, size = 15):
+        self._BOARD_SIZE = size
+        self._board = [[0 for _ in range(self._BOARD_SIZE)] for _ in range(self._BOARD_SIZE)]
         self.__live_state = {0: "close", 1: "death", 2: "alive"}
 
     def Set_board(self, board):
         self._board = board
         self._BOARD_SIZE = len(board)
 
+    def Get_board(self):
+        return self._board
+
+    def Place_chess(self, x, y):
+        self._board[x][y] = 1
+
+    def Place_chess_com(self, x, y):
+        self._board[x][y] = 2
+        
     def Is_board_empty(self):
         for x in self._board:
             for y in x:
