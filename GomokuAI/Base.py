@@ -29,23 +29,27 @@ class BaseBoard():
                     return False
         return True
 
+    def _clear_board(self):
+        self._board = [[0 for _ in range(self._BOARD_SIZE)] for _ in range(self._BOARD_SIZE)]
+
     def Get_center_move(self):
         center = self._BOARD_SIZE // 2
         return (center + random.randint(-2, 2), center + random.randint(-2, 2))
 
-    def _print_chessborad(self, board):
+    def _print_chessboard(self, board):
+        # 顯示欄的標號
         print("    ", end="")
         for i in range(len(board)):
-            print(i, end=" ")
+                print(f"{hex(i)[2:]:2}", end="")
         print()
 
-        for index, i in enumerate(board):
-            for j in range(0, len(i)):
-                if j == 0:
-                    print(index, "[ ", end="")
-                print(i[j], end=" ")
-                if j == len(i) - 1:
-                    print("]", end="")
+        # 顯示棋盤
+        for i, row in enumerate(board):
+            print(f"{hex(i)[2:]:2}[", end="")
+            for j in range(len(row)):
+                print(f"{row[j]:>2}", end="")
+                if j == len(row) - 1:
+                    print(" ]", end="")
             print()
 
     def _game_over(self, borad):
