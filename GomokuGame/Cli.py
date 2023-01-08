@@ -22,29 +22,12 @@ class GomokuGameCLI(Base.BaseBoard):
                     return True
         return False
 
-    def __clear_board(self):
-        for i in range(self._BOARD_SIZE):
-            for j in range(self._BOARD_SIZE):
-                self._board[i][j] = 0
-
     def Continue(self):
         while True:
             again = input('Do you want to again? Input Y or Ctrl+C exit!')
             if (again == 'Y'):
-                self.__clear_board()
+                self._clear_board()
                 return True
 
     def Print_chessborad(self, borad):
-        print("    ", end = "")
-        for i in range(len(borad)):
-            print(i, end = " ")
-        print()
-
-        for index, i in enumerate(borad):
-            for j in range(0, len(i)):
-                if j == 0:
-                    print(index , "[ ", end="")
-                print(i[j], end=" ")
-                if j == len(i) - 1:
-                    print("]", end="")
-            print()
+        self._print_chessboard(borad)

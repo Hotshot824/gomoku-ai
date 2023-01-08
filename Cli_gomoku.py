@@ -1,14 +1,14 @@
-import GomokuSocket.Client as gs
+import GomokuSocket.Client as Client
 import GomokuGame.Cli as Cli
 import sys
 
 if __name__ == '__main__':
-    borad_size = 10
+    borad_size = 15
     borad = Cli.GomokuGameCLI(borad_size)
-    client = gs.GomokuClient()
+    client = Client.GomokuClient()
 
     borad.Print_chessborad(borad.Get_board())
-    first = int(input("Who are first? (1):COM (2):Player"))
+    first = int(input("Who is first? (1):COM (2):Player"))
     while True:
         
         if first == 1:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
             if borad.Continue():
                 print('\033c', end='')
                 borad.Print_chessborad(borad.Get_board())
-                first = int(input("Who are first? (1):COM (2):Player"))
+                first = int(input("Who is first? (1):COM (2):Player"))
                 pass
             else:
                 sys.exit(0)
@@ -47,7 +47,7 @@ if __name__ == '__main__':
                 if borad.Continue():
                     print('\033c', end='')
                     borad.Print_chessborad(borad.Get_board())
-                    first = int(input("Who are first? (1):COM (2):Player"))
+                    first = int(input("Who is first? (1):COM (2):Player"))
                     pass
                 else:
                     sys.exit(0)

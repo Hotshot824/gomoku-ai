@@ -5,6 +5,8 @@ import GomokuAI.GomokuAI as GomokuAI
 
 class GomokuServer(asyncio.Protocol, GomokuAI.GomokuAI):
     def connection_made(self, transport):
+        asyncio.Protocol.__init__(self)
+        GomokuAI.GomokuAI.__init__(self)
         self.__transport = transport
         self.__address = transport.get_extra_info('peername')
         print('Accepted connection from {}'.format(self.__address))
@@ -25,7 +27,7 @@ class GomokuServer(asyncio.Protocol, GomokuAI.GomokuAI):
 
     def __parse(self, require):
         if (require['chess_record']):
-            # self.__print_chessborad(require['chess_record'])
+            # self._print_chessboard(require['chess_record'])
             self.Set_board(require['chess_record'])
             start = time.perf_counter()
             if self.Is_board_empty():
@@ -36,21 +38,10 @@ class GomokuServer(asyncio.Protocol, GomokuAI.GomokuAI):
             end = time.perf_counter()
             print("best score: {}, best move: {}.".format(score, move))
             print("elapsed time: {:.6f}s, recursion times: {}.".format(end - start, self.Get_count()))
-            self._print_chessborad(best_board)
+            self._print_chessboard(best_board)
             # score, move = self.test(require['chess_record'])
             response = {'score': score, 'move': move}
         return response
-
-    def __print_chessborad(self, chseeborad):
-        for i in chseeborad:
-            for j in range(0, len(i)):
-                if j == 0:
-                    print("[ ", end="")
-                print(i[j], end=" ")
-                if j == len(chseeborad) - 1:
-                    print("]", end="")
-            print()
-
 
 def RunServer():
     address = ("127.0.0.1", 4000)
