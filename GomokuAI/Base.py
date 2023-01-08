@@ -30,9 +30,7 @@ class BaseBoard():
         return True
 
     def _clear_board(self):
-        for i in range(self._BOARD_SIZE):
-            for j in range(self._BOARD_SIZE):
-                self._board[i][j] = 0
+        self._board = [[0 for _ in range(self._BOARD_SIZE)] for _ in range(self._BOARD_SIZE)]
 
     def Get_center_move(self):
         center = self._BOARD_SIZE // 2

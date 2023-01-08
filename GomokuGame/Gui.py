@@ -1,4 +1,4 @@
-import sys
+import os
 import PyQt5.QtWidgets as QW
 import GomokuAI.Base as Base
 import GomokuSocket.Client as Client
@@ -8,11 +8,14 @@ import PyQt5.QtCore as QC
 import functools as ft
 
 
-class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
+class GomokuGUI(QW.QWidget, Base.BaseBoard):
     def __init__(self):
+        # change work directory
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
         QW.QWidget.__init__(self)
         Base.BaseBoard.__init__(self)
-        Client.GomokuClient.__init__(self)
+        self.__thread_flag = 0
+        self.__winner = 0
         self.x = -1
         self.y = -1
         self.setWindowTitle('Gomoku Client')
@@ -30,19 +33,20 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
         return font
 
     def __get_background_image(self):
-        pixmap = QG.QPixmap('./image/background.jpg')
+        pixmap = QG.QPixmap('../image/background.jpg')
         brush = QG.QBrush(pixmap)
         return brush
 
     def __set_music(self):
-        self.btn_sound = QM.QSound('./media/button.mp3')
+        self.btn_sound = QM.QSound('../media/button.mp3')
+        self.chess_sound = QM.QSound('../media/chess.mp3')
         self.__playlist = QM.QMediaPlaylist()
-        self.__playlist.addMedia(QM.QMediaContent(QC.QUrl.fromLocalFile("./media/background.mp3")))
+        self.__playlist.addMedia(QM.QMediaContent(QC.QUrl.fromLocalFile("../media/background.mp3")))
         self.__playlist.setCurrentIndex(1)
         self.__playlist.setPlaybackMode(QM.QMediaPlaylist.PlaybackMode.CurrentItemInLoop)
         self.__music = QM.QMediaPlayer(self)
         self.__music.setPlaylist(self.__playlist)
-        self.__music.setVolume(40)
+        self.__music.setVolume(30)
         self.__music.setPlaybackRate(0.9)
         self.__music.play()
 
@@ -106,6 +110,25 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
         self.__choose_com_btn.setStyleSheet(choose_btn_style)
         self.__choose_com_btn.setVisible(False)
 
+    def __get_exist_chess(self, color):
+        tmp = []
+        for x in range(self._BOARD_SIZE):
+            for y in range(self._BOARD_SIZE):
+                if self._board[x][y] != color:
+                    continue
+                tmp.append((x, y))
+        return tmp
+
+    def __get_winner_text(self):
+        if self.__winner == 1:
+            return 'You Win!'
+        if self.__winner == 2:
+            return 'You Lose!'
+
+    def __show_choose_btn(self, boolen):
+        self.__choose_player_btn.setVisible(boolen)
+        self.__choose_com_btn.setVisible(boolen)
+
     def paintEvent(self, e):
         qp = QG.QPainter()
         qp.begin(self)
@@ -123,10 +146,17 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
                         QC.QPoint(50 + 30 * i, 470))
 
         qp.setFont(QG.QFont("Arial", 8))
+        option = QG.QTextOption()
+        option.setAlignment(QC.Qt.AlignHCenter)
         for i in range(self._BOARD_SIZE):
-            num = i + 1
+            # num = i + 1
+            num = i
             qp.drawText(QC.QPoint(45 + 30 * i, 40), str(num))
             qp.drawText(QC.QPoint(30, 55 + 30 * i), str(num))
+
+        # Trademark
+        qp.drawText(QC.QRectF(470, 455, 200, 40), "Developed by Benson", option)
+        qp.drawText(QC.QRectF(470, 475, 200, 40), "Github: Hotshot824", option)
 
         # paint on chessboard five key point
         key_points = [(3, 3), (11, 3), (3, 11), (11, 11), (7, 7)]
@@ -145,32 +175,32 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
             for t in self.__get_exist_chess(1):
                 qp.drawEllipse(QC.QPoint(50 + 30 * t[1], 50 + 30 * t[0]), 13, 13)
 
-        option = QG.QTextOption()
-        option.setAlignment(QC.Qt.AlignHCenter)
+        qp.setFont(self.__get_title_font())
         if self.__game_state == 'Choose':
-            qp.setFont(self.__get_title_font())
             qp.drawText(QC.QRectF(470, 100, 200, 40), "Who is first?", option)
         if self.__game_state == 'Player':
-            qp.setFont(self.__get_title_font())
             qp.drawText(QC.QRectF(470, 100, 200, 40), "Your Turn", option)
         if self.__game_state == 'Com':
-            qp.setFont(self.__get_title_font())
             qp.drawText(QC.QRectF(470, 100, 200, 40), "Waiting...", option)
+        if self.__game_state == 'GameOver':
+            qp.drawText(QC.QRectF(470, 100, 200, 40), self.__get_winner_text(), option)
 
         qp.end()
 
-    def __get_exist_chess(self, color):
-        tmp = []
-        for x in range(self._BOARD_SIZE):
-            for y in range(self._BOARD_SIZE):
-                if self._board[x][y] != color:
-                    continue
-                tmp.append((x, y))
-        return tmp
-
-    def __show_choose_btn(self, boolen):
-        self.__choose_player_btn.setVisible(boolen)
-        self.__choose_com_btn.setVisible(boolen)
+    def mousePressEvent(self, e):
+        if e.buttons() == QC.Qt.LeftButton:
+            if e.x() > 15 and e.x() < 495 and e.y() > 15 and e.y() < 495:
+                x = e.x()/30 - e.x()//30
+                y = e.y()/30 - e.y()//30
+                self.x = (e.y()-30)//30 if y < 0.5 else (e.y()-30)//30 + 1
+                self.y = (e.x()-30)//30 if x < 0.5 else (e.x()-30)//30 + 1
+                if self.__game_state == 'Player':
+                    if self.put_white_chess(self.x - 1, self.y - 1):
+                        if self._game_over(self._board):
+                            self.__game_state = 'GameOver'
+                            self.__winner = 1
+                        else:
+                            self.__thread_start()
 
     def __click_start_btn_event(self):
         self.btn_sound.play()
@@ -187,12 +217,14 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
         self.__restart_btn.setVisible(True)
         if first == 'player':
             self.__game_state = 'Player'
+            self.update()
         else:
-            self.__game_state = 'Com'
+            self.__thread_start()
         self.__restart_btn.clicked.connect(self.__click_restart_btn_event)
-        self.update()
 
     def __click_restart_btn_event(self):
+        self.__thread_flag = 0
+        self.__winner = 0
         self.btn_sound.play()
         self.__start_btn.setVisible(True)
         self.__restart_btn.setVisible(False)
@@ -202,23 +234,59 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard, Client.GomokuClient):
         self._clear_board()
         self.update()
 
-    def mousePressEvent(self, e):
-        if e.buttons() == QC.Qt.LeftButton:
-            if e.x() > 15 and e.x() < 495 and e.y() > 15 and e.y() < 495:
-                x = e.x()/30 - e.x()//30
-                y = e.y()/30 - e.y()//30
-                self.x = (e.y()-30)//30 if y < 0.5 else (e.y()-30)//30 + 1
-                self.y = (e.x()-30)//30 if x < 0.5 else (e.x()-30)//30 + 1
-                if self.__game_state == 'Player':
-                    if self.put_white_chess(self.x - 1, self.y - 1):
-                        print(self.x - 1, self.y - 1)
-                        self._print_chessboard(self._board)
+    def __thread_start(self):
+        if self.__thread_flag == 0:
+            self.__thread_flag = 1
+            self.__thread = GomokuSocket(self._board)
+            self.__thread.sig.connect(self.__thread_handle)
+            self.__thread.start()
+            self.__game_state = 'Com'
+            self.update()
 
-    #下白子
+    def __thread_handle(self, response):
+        if self.__thread_flag == 1:
+            x, y = response['move'][0], response['move'][1]
+            if self.put_black_chess(x, y):
+                self.__game_state = 'Player'
+                self.update()
+            if self._game_over(self._board):
+                self.__game_state = 'GameOver'
+                self.__winner = 2
+                self.update()
+            self.__thread_flag = 0
+
     def put_white_chess(self, x, y):
         if self._board[x][y] != 0:
             return False
         else:
             self._board[x][y] = 1
+            self.chess_sound.play()
             self.update()
             return True
+
+    def put_black_chess(self, x, y):
+        if self._board[x][y] != 0:
+            return False
+        else:
+            self._board[x][y] = 2
+            self.chess_sound.play()
+            self.update()
+            return True
+
+
+class GomokuSocket(QC.QThread):
+    sig = QC.pyqtSignal(dict)
+
+    def __init__(self, board):
+        self.__board = board
+        super(GomokuSocket, self).__init__()
+
+    def __get_board(self):
+        return self.__board
+
+    def run(self):
+        client = Client.GomokuClient()
+        client.connect()
+        client.send_data({'chess_record': self.__get_board()})
+        response = client.recv_data()
+        self.sig.emit(response)
