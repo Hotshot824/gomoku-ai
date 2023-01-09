@@ -37,13 +37,11 @@ class BaseBoard():
         return (center + random.randint(-2, 2), center + random.randint(-2, 2))
 
     def _print_chessboard(self, board):
-        # 顯示欄的標號
         print("    ", end="")
         for i in range(len(board)):
                 print(f"{hex(i)[2:]:2}", end="")
         print()
 
-        # 顯示棋盤
         for i, row in enumerate(board):
             print(f"{hex(i)[2:]:2}[", end="")
             for j in range(len(row)):

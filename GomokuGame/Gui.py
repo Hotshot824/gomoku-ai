@@ -223,7 +223,9 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
         self.__restart_btn.clicked.connect(self.__click_restart_btn_event)
 
     def __click_restart_btn_event(self):
-        self.__thread_flag = 0
+        if self.__thread_flag == 1:
+            self.__thread_flag = 0
+            self.__thread.quit()
         self.__winner = 0
         self.btn_sound.play()
         self.__start_btn.setVisible(True)
@@ -237,7 +239,7 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
     def __thread_start(self):
         if self.__thread_flag == 0:
             self.__thread_flag = 1
-            self.__thread = GomokuSocket(self._board)
+            self.__thread = GomokuThread(self._board)
             self.__thread.sig.connect(self.__thread_handle)
             self.__thread.start()
             self.__game_state = 'Com'
@@ -274,12 +276,12 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
             return True
 
 
-class GomokuSocket(QC.QThread):
+class GomokuThread(QC.QThread):
     sig = QC.pyqtSignal(dict)
 
     def __init__(self, board):
         self.__board = board
-        super(GomokuSocket, self).__init__()
+        super(GomokuThread, self).__init__()
 
     def __get_board(self):
         return self.__board
