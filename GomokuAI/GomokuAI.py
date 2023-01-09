@@ -22,7 +22,7 @@ class GomokuAI(Base.BaseBoard):
     def __set_evaluate_table(self):
         return {
             ('alive', 5) : self.maxint, ('death', 5) : self.maxint, ('close', 5) : self.maxint,
-            ('alive', 4) : 100000, ('death', 4) : 1000, ('close', 4) : 0,
+            ('alive', 4) : 10000, ('death', 4) : 1000, ('close', 4) : 0,
             ('alive', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
             ('alive', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
             ('alive', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
@@ -175,12 +175,14 @@ class GomokuAI(Base.BaseBoard):
             if score > alpha:
                 alpha = score
                 bestmove = (x, y)
+                bestboard = copy.deepcopy(board)
+                bestboard[x][y] = turn
                 if alpha >= beta:
                     break
 
         if depth == self.maxdepth and bestmove:
             self.bestmove = bestmove
-            self.bestboard = board
+            self.bestboard = bestboard
                     
         return alpha
 
@@ -188,5 +190,5 @@ class GomokuAI(Base.BaseBoard):
         self.maxdepth = depth
         self.bestmove = None
         self.bestboard = None
-        score = self.__search(board, turn, self.__maxdepth, -2147483647, 2147483647)
+        score = self.__search(board, turn, self.__maxdepth, self.minint, self.maxint)
         return score, self.bestmove, self.bestboard

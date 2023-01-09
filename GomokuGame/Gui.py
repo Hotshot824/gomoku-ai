@@ -1,4 +1,4 @@
-import os
+import os, time
 import PyQt5.QtWidgets as QW
 import GomokuAI.Base as Base
 import GomokuSocket.Client as Client
@@ -14,6 +14,10 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         QW.QWidget.__init__(self)
         Base.BaseBoard.__init__(self)
+        self.__time = TimeThread()
+        self.__time.sig.connect(self.__timing)
+        self.__time.start()
+        self.__runtime = 0
         self.__thread_flag = 0
         self.__winner = 0
         self.x = -1
@@ -180,8 +184,12 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
             qp.drawText(QC.QRectF(470, 100, 200, 40), "Who is first?", option)
         if self.__game_state == 'Player':
             qp.drawText(QC.QRectF(470, 100, 200, 40), "Your Turn", option)
+            qp.setFont(QG.QFont("Arial", 10))
+            qp.drawText(QC.QRectF(470, 120, 200, 40), "{}s".format(self.__runtime), option)
         if self.__game_state == 'Com':
-            qp.drawText(QC.QRectF(470, 100, 200, 40), "Waiting...", option)
+            qp.drawText(QC.QRectF(470, 100, 200, 40), "Waiting", option)
+            qp.setFont(QG.QFont("Arial", 10))
+            qp.drawText(QC.QRectF(470, 120, 200, 40), "{}s".format(self.__runtime), option)
         if self.__game_state == 'GameOver':
             qp.drawText(QC.QRectF(470, 100, 200, 40), self.__get_winner_text(), option)
 
@@ -202,16 +210,21 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
                         else:
                             self.__thread_start()
 
+    def __reset_time(self):
+        self.__runtime = 0
+        self.__time.reset()
+
     def __click_start_btn_event(self):
         self.btn_sound.play()
         self.__start_btn.setVisible(False)
         self.__show_choose_btn(True)
         self.__game_state = 'Choose'
-        self.__choose_player_btn.clicked.connect(ft.partial(self.__click_start_game_event, 'player'))
-        self.__choose_com_btn.clicked.connect(ft.partial(self.__click_start_game_event, 'com'))
+        self.__choose_player_btn.clicked.connect(ft.partial(self.__click_choose_event, 'player'))
+        self.__choose_com_btn.clicked.connect(ft.partial(self.__click_choose_event, 'com'))
         self.update()
 
-    def __click_start_game_event(self, first):
+    def __click_choose_event(self, first):
+        self.__reset_time()
         self.btn_sound.play()
         self.__show_choose_btn(False)
         self.__restart_btn.setVisible(True)
@@ -223,6 +236,7 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
         self.__restart_btn.clicked.connect(self.__click_restart_btn_event)
 
     def __click_restart_btn_event(self):
+        self.__reset_time()
         if self.__thread_flag == 1:
             self.__thread_flag = 0
             self.__thread.quit()
@@ -237,6 +251,7 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
         self.update()
 
     def __thread_start(self):
+        self.__reset_time()
         if self.__thread_flag == 0:
             self.__thread_flag = 1
             self.__thread = GomokuThread(self._board)
@@ -246,6 +261,7 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
             self.update()
 
     def __thread_handle(self, response):
+        self.__reset_time()
         if self.__thread_flag == 1:
             x, y = response['move'][0], response['move'][1]
             if self.put_black_chess(x, y):
@@ -256,6 +272,10 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
                 self.__winner = 2
                 self.update()
             self.__thread_flag = 0
+
+    def __timing(self, response):
+        self.__runtime = response
+        self.update()
 
     def put_white_chess(self, x, y):
         if self._board[x][y] != 0:
@@ -292,3 +312,24 @@ class GomokuThread(QC.QThread):
         client.send_data({'chess_record': self.__get_board()})
         response = client.recv_data()
         self.sig.emit(response)
+
+class TimeThread(QC.QThread):
+    sig = QC.pyqtSignal(int)
+
+    def __init__(self):
+        super(TimeThread, self).__init__()
+        self.stop_requested = False
+
+    def run(self):
+        self.counter = 0
+        while True:
+            if not self.stop_requested:
+                self.counter += 1
+                self.sig.emit(self.counter)
+            time.sleep(1)
+
+    def stop(self):
+        self.stop_requested = True
+
+    def reset(self):
+        self.counter = 0
