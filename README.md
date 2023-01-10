@@ -2,7 +2,7 @@
 
 a simple gomoku AI Use **Minimax algorithm**
 
-![](https://github.com/Hotshot824/gomoku-ai/blob/main/image/document.jpg?raw=true)
+![](https://github.com/Hotshot824/gomoku-ai/blob/main/image/document_image.png?raw=true)
 
 ## Algorithm process
 
