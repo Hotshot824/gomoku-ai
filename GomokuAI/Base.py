@@ -121,7 +121,7 @@ class BaseBoard():
         if (x+1 < self._BOARD_SIZE and y+1 < self._BOARD_SIZE and x-1 >= 0 and y-1 >= 0):
             if (board[x][y+1] == board[x+1][y] == board[x][y-1] == board[x+1][y] ==
                     board[x+1][y+1] == board[x-1][y+1] == board[x+1][y-1] == board[x-1][y-1] == role):
-                return 'alive'
-            return 'death'
+                return 'death'
+            return 'alive'
         else:
             return 'close'

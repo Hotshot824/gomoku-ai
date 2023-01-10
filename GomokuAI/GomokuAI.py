@@ -22,10 +22,10 @@ class GomokuAI(Base.BaseBoard):
     def __set_evaluate_table(self):
         return {
             ('alive', 5) : self.maxint, ('death', 5) : self.maxint, ('close', 5) : self.maxint,
-            ('alive', 4) : 10000, ('death', 4) : 1000, ('close', 4) : 0,
-            ('alive', 3) : 1000, ('death', 3) : 100, ('close', 3) : 0,
-            ('alive', 2) : 100, ('death', 2) : 10, ('close', 2) : 0,
-            ('alive', 1) : 10, ('death', 1) : 1, ('close', 1) : 0,
+            ('alive', 4) : 1000000, ('death', 4) : 8000, ('close', 4) : 0,
+            ('alive', 3) : 10000, ('death', 3) : 1000, ('close', 3) : 0,
+            ('alive', 2) : 800, ('death', 2) : 50, ('close', 2) : 0,
+            ('alive', 1) : 0, ('death', 1) : 10, ('close', 1) : 0,
         }
 
     def __piece_chess(self, board, position, player):
@@ -93,7 +93,7 @@ class GomokuAI(Base.BaseBoard):
             next_board = self.__piece_chess(board, [move[0], move[1]], player)
             value = self.__evaluate_board(next_board)
             tmp[(move[0], move[1])] = value
-            if value > 10000:
+            if value > 1000000:
                 print(value, move)
                 self.bestboard = next_board
                 self.bestmove = move
