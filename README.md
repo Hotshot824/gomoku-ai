@@ -2,6 +2,8 @@
 
 a simple gomoku AI Use **Minimax algorithm**
 
+![](https://github.com/Hotshot824/gomoku-ai/blob/main/image/document.jpg?raw=true)
+
 ## Algorithm process
 
 1. First check if anyplayer has won.
