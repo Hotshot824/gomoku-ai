@@ -4,9 +4,27 @@ a simple gomoku AI Use **Minimax algorithm**
 
 ![](https://github.com/Hotshot824/gomoku-ai/blob/main/image/document_image.png?raw=true)
 
-## Algorithm process
+## Requirement
 
-1. First check if anyplayer has won.
-2. AI's turn. Go through all board points to confirm the highest score.
-3. The player's turn is the same as above, but the score is negative.
-4. Stop until max depth.
+Install python environement `python -m pip install requirements.txt`
+
+## How to play?
+
+1. Start gomoku-ai server, run command `python start_server.py`
+2. Choose interface, run `python Cli_gomoku.py` or `python Gui_gomoku.py`
+3. Play Gomoku Game.
+
+## Features
+
+- [x] Simple gomoku AI, using search algorithm.
+- [x] Have a clear inheritance relationship.
+    * Server: base -> gomokuAI -> server
+    * Client: base -> client -> CLI/GUI
+- [x] Support player online battle
+- [x] Support multiple player at the same time.
+
+## Future plans
+
+- [ ] Deeper recursion depth.
+- [ ] Wider search range.
+- [ ] Improved heuristic function.
