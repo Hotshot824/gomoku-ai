@@ -16,6 +16,31 @@ class BaseBoard():
     def Get_board(self):
         return self._board
 
+    # Get the four-direction connecting lines of a point
+    def _get_lines(board:list, x:int, y:int, distance:int) -> list:
+        distance = distance -1
+        row = ""
+        col = ""
+        dia1 = ""
+        dia2 = ""
+        for i in board[x][max(y-distance, 0):y+distance+1]:
+            row += str(i)
+        for i in [i[y] for i in board[max(x-distance, 0):x+distance+1]]:
+            col += str(i)
+        i, j = x - distance, y - distance
+        for _ in range(distance*2 + 1):
+            if i >= 0 and j >= 0 and i < len(board) and j < len(board):
+                dia1 += str(board[i][j])
+            i += 1 
+            j += 1
+        i, j = x + distance, y - distance
+        for _ in range(distance*2 + 1):
+            if i >= 0 and j >= 0 and i < len(board) and j < len(board):
+                dia2 += str(board[i][j])
+            i -= 1 
+            j += 1
+        return [row, col, dia1, dia2]
+
     def Place_chess(self, x, y):
         self._board[x][y] = 1
 

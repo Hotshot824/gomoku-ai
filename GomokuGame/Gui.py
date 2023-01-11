@@ -37,9 +37,13 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
         return font
 
     def __get_background_image(self):
-        pixmap = QG.QPixmap('../image/background.jpg')
+        pixmap = QG.QPixmap('../image/background.jpeg')
         brush = QG.QBrush(pixmap)
         return brush
+
+    def __get_chessboard_image(self):
+        image = QG.QImage('../image/chessboard.jpg')
+        return image
 
     def __set_music(self):
         self.btn_sound = QM.QSound('../media/button.mp3')
@@ -137,6 +141,10 @@ class GomokuGUI(QW.QWidget, Base.BaseBoard):
         qp = QG.QPainter()
         qp.begin(self)
         qp.fillRect(self.rect(), self.__get_background_image())
+
+        qp.setPen(QG.QPen(QG.QColor(0, 0, 0), 0.5, QC.Qt.SolidLine))
+        qp.drawImage(QC.QRect(20, 20, 470, 470), self.__get_chessboard_image())
+        qp.drawRect(QC.QRect(20, 20, 470, 470))
 
         # paint chessboard
         qp.setPen(QG.QPen(QG.QColor(0, 0, 0), 2, QC.Qt.SolidLine))

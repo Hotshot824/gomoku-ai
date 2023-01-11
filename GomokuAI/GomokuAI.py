@@ -12,6 +12,7 @@ class GomokuAI(Base.BaseBoard):
         self.__maxdepth = 4
         self.__inv_player = {1:2, 2:1}
         self.__count = 0
+        self.__state_table = None
 
     def Get_count(self):
         return self.__count
@@ -35,6 +36,7 @@ class GomokuAI(Base.BaseBoard):
         return tmp
 
     def __evaluate_role(self, board, role):
+        board = tuple(map(tuple, board))
         value = 0
         for x in range(self._BOARD_SIZE):
             for y in range(self._BOARD_SIZE):
